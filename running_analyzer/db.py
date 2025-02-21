@@ -5,7 +5,7 @@ DATABASE_URL = config("DATABASE_URL")
 
 
 def get_engine():
-    return create_engine(DATABASE_URL, echo=True)
+    return create_engine(DATABASE_URL, echo=False)
 
 
 def init_db():

@@ -23,7 +23,7 @@ class Run(SQLModel, table=True):
     distance: float = Field(..., description="Distance Covered", ge=0)
     unit: DistanceUnit = Field(..., description="Unit of measurement (mi/km)")
     duration: float = Field(..., description="Duration in minutes", ge=0)
-    heart_rate: int | None = Field(default=None, description="Average Heart Rate")
+    heart_rate: float | None = Field(default=None, description="Average Heart Rate")
     elevation_gain: float | None = Field(default=None, description="Elevation gain")
     pace: float | None = Field(default=None, description="Pace in min per mile/km")
     run_type: RunType = Field(..., description="Type of run")
