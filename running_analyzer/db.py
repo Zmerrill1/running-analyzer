@@ -3,12 +3,11 @@ from sqlmodel import SQLModel, create_engine
 
 DATABASE_URL = config("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL, echo=True)
+
+def get_engine():
+    return create_engine(DATABASE_URL, echo=True)
 
 
 def init_db():
+    engine = get_engine()
     SQLModel.metadata.create_all(engine)
-
-
-def get_engine():
-    return engine
