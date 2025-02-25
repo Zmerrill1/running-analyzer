@@ -18,6 +18,8 @@ class RunType(str, Enum):
 
 
 class Run(SQLModel, table=True):
+    __tablename__ = "run"
+
     id: int | None = Field(default=None, primary_key=True)
     date: datetime = Field(default_factory=datetime.utcnow)
     distance: float = Field(..., description="Distance Covered", ge=0)
