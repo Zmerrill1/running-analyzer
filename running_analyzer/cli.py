@@ -17,6 +17,29 @@ def fetch_runs() -> list[Run]:
     return runs
 
 
+# persistant runninng of app. Need to work more, but doing it REPL style and prompts users for commands.
+def command_loop():
+    typer.echo(
+        "Welcome to Running Data Analyzer! Type 'help' for commands or 'exit' to quit."
+    )
+
+    while True:
+        command = typer.prompt(">>>")
+
+        if command in ["exit", "quit"]:
+            typer.echo("Goodbye!")
+            break
+        elif command == "help":
+            typer.echo(
+                "Available commands:\n - hello\n - list-runs\n - update-run\n - import-data\n - summary\n - best-run\n - avg-pace"
+            )
+
+
+@app.command()
+def run():
+    command_loop()
+
+
 @app.command()
 def hello():
     typer.echo("👋 Hello from Running Data Analyzer!")
