@@ -1,15 +1,9 @@
 import csv
 from running_analyzer.models import Run
 import logging
+import typer
 
 logging.basicConfig(level=logging.WARNING)
-
-
-def safe_float(value):
-    try:
-        return float(value)
-    except (ValueError, TypeError):
-        raise ValueError(f"Cannot convert {value!r} to float.")
 
 
 def load_runs_from_csv(csv_file: str):
@@ -21,12 +15,12 @@ def load_runs_from_csv(csv_file: str):
             try:
                 run = Run(
                     date=row["date"],
-                    distance=safe_float(row["distance"]),
+                    distance=row["distance"],
                     unit=row.get("unit", "km"),
-                    duration=safe_float(row["duration"]),
-                    heart_rate=safe_float(row.get("heart_rate", 0)),
-                    elevation_gain=safe_float(row.get("elevation_gain", 0)),
-                    pace=safe_float(row.get("pace", 0)),
+                    duration=row["duration"],
+                    heart_rate=row.get("heart_rate", 0),
+                    elevation_gain=row.get("elevation_gain", 0),
+                    pace=row.get("pace", 0),
                     run_type=row.get("run_type", ""),
                     location=row.get("location", ""),
                     notes=row.get("notes", ""),
@@ -41,3 +35,18 @@ def load_runs_from_csv(csv_file: str):
             print(invalid)
 
     return runs_to_add
+
+
+def display_run_details(run: Run):
+    typer.echo("Current run details:")
+    typer.echo(f"  Date: {run.date}")
+    typer.echo(
+        f"  Distance: {run.distance} {run.unit.value if hasattr(run.unit, 'value') else run.unit}"
+    )
+    typer.echo(f"  Duration: {run.duration} mins")
+    typer.echo(f"  Heart Rate: {run.heart_rate}")
+    typer.echo(f"  Elevation Gain: {run.elevation_gain}")
+    typer.echo(f"  Pace: {run.pace}")
+    typer.echo(f"  Run Type: {run.run_type}")
+    typer.echo(f"  Location: {run.location}")
+    typer.echo(f"  Notes: {run.notes}")
