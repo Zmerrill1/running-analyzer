@@ -1,0 +1,101 @@
+date,distance,unit,duration,heart_rate,elevation_gain,pace,run_type,location,notes
+2025-02-18,25.3,km,205.22,162.0,80.63,8.11,Recovery,Stadium,
+2025-02-16,12.57,km,77.17,,4.08,6.14,Interval,,Tough run
+2024-09-17,10.41,mi,83.67,123.0,211.39,8.04,Recovery,Neighborhood,
+2025-01-27,9.47,mi,102.84,145.0,104.13,10.86,Race,,
+2024-10-07,27.78,km,317.93,121.0,,11.44,Interval,Trail,
+2024-10-09,12.6,km,147.9,156.0,341.05,11.74,Easy,,Tough run
+2024-10-26,13.54,km,147.28,,100.93,10.88,Race,Riverside,
+2025-02-20,2.6,mi,19.39,168.0,,7.46,Recovery,Stadium,Felt great!
+2025-02-14,27.7,km,171.97,176.0,376.46,6.21,Long,Trail,Felt great!
+2024-09-15,30.71,km,356.49,152.0,424.88,11.61,Easy,Downtown,Weather was perfect
+2024-10-01,13.77,km,155.22,,,11.27,Recovery,Downtown,Tough run
+2024-11-21,21.96,km,255.58,127.0,455.1,11.64,Race,Neighborhood,Struggled with pace
+2024-11-08,3.89,km,40.97,158.0,45.49,10.53,Long,Riverside,Great scenery
+2024-12-28,26.25,km,211.8,150.0,250.81,8.07,Recovery,Neighborhood,
+2025-01-26,14.36,mi,167.52,130.0,333.31,11.67,Interval,Trail,
+2024-08-27,6.09,km,52.38,156.0,210.34,8.6,Recovery,Central Park,
+2024-11-14,28.31,km,293.14,163.0,,10.35,Easy,,
+2024-11-07,14.56,mi,153.71,137.0,389.31,10.56,Race,Stadium,Struggled with pace
+2025-01-28,13.17,mi,81.13,142.0,465.47,6.16,Interval,Stadium,Felt great!
+2025-02-04,15.3,km,94.17,139.0,447.46,6.15,Tempo,Trail,Great scenery
+2024-12-08,14.61,mi,163.91,151.0,78.22,11.22,Interval,Central Park,
+2024-10-25,19.36,mi,215.81,138.0,293.83,11.15,Easy,Riverside,Great scenery
+2025-01-27,4.16,km,38.45,142.0,193.18,9.24,Tempo,,Struggled with pace
+2024-11-29,8.92,mi,61.58,130.0,,6.9,Interval,Trail,
+2024-12-03,2.23,mi,22.29,134.0,,10.0,Interval,,Felt tired
+2024-10-23,16.75,mi,156.42,,,9.34,Recovery,,Felt great!
+2024-11-08,18.15,mi,185.53,127.0,449.11,10.22,Long,Trail,
+2024-09-07,20.13,km,175.22,,,8.7,Easy,Stadium,
+2024-11-29,17.46,mi,112.24,126.0,217.42,6.43,Interval,Trail,
+2024-09-08,11.12,mi,104.54,136.0,375.02,9.4,Long,Trail,
+2024-11-30,20.99,km,134.28,128.0,,6.4,Easy,Neighborhood,
+2025-01-31,12.77,mi,136.03,138.0,415.14,10.65,Recovery,Central Park,
+2024-12-20,12.44,km,87.88,150.0,289.57,7.06,Easy,Central Park,
+2024-08-25,17.34,km,118.93,,,6.86,Easy,Stadium,
+2024-12-04,6.87,mi,66.9,168.0,,9.74,Long,,Weather was perfect
+2024-10-12,5.19,km,36.84,140.0,,7.1,Interval,Stadium,Tough run
+2025-01-12,24.32,km,166.19,149.0,58.44,6.83,Interval,Stadium,Weather was perfect
+2024-09-11,12.66,mi,139.17,177.0,,10.99,Interval,Riverside,Struggled with pace
+2024-10-16,19.43,mi,123.43,131.0,388.15,6.35,Race,Neighborhood,Great scenery
+2024-11-17,4.59,km,27.97,161.0,167.5,6.09,Recovery,,
+2025-02-03,10.68,km,127.67,130.0,401.71,11.95,Interval,,
+2025-02-07,21.42,km,140.87,167.0,234.0,6.58,Race,Riverside,Felt tired
+2024-09-04,18.29,mi,125.52,120.0,400.22,6.86,Recovery,,Felt great!
+2024-12-27,12.57,mi,115.97,170.0,214.15,9.23,Race,,Tough run
+2024-10-03,14.23,km,138.08,,136.06,9.7,Long,Riverside,
+2024-09-12,12.03,mi,107.21,126.0,491.05,8.91,Tempo,Stadium,Felt tired
+2025-01-10,17.67,mi,151.34,140.0,447.57,8.56,Interval,Riverside,Tough run
+2024-09-14,20.0,mi,227.36,135.0,218.96,11.37,Recovery,Stadium,
+2024-12-04,16.9,mi,173.89,,395.17,10.29,Recovery,Downtown,Weather was perfect
+2024-12-05,3.68,mi,34.08,131.0,,9.26,Interval,Central Park,
+2024-09-30,10.71,km,115.9,,,10.82,Interval,Downtown,
+2024-12-18,3.88,mi,44.39,123.0,229.42,11.44,Race,Downtown,
+2024-09-11,13.21,mi,81.0,146.0,,6.13,Tempo,Stadium,
+2025-02-12,10.98,mi,105.57,136.0,319.78,9.61,Easy,Central Park,Tough run
+2024-12-26,4.22,km,30.33,158.0,,7.19,Tempo,Central Park,Great scenery
+2024-09-18,31.16,km,335.19,,,10.76,Recovery,Trail,Weather was perfect
+2024-10-15,6.7,mi,56.39,129.0,42.87,8.42,Race,Downtown,Struggled with pace
+2024-08-27,4.68,mi,48.59,,43.37,10.38,Easy,Central Park,Struggled with pace
+2024-09-29,22.18,km,150.85,,319.85,6.8,Tempo,Central Park,Felt great!
+2024-10-11,15.64,mi,178.24,179.0,156.42,11.4,Tempo,Downtown,
+2024-10-11,12.13,mi,74.88,143.0,429.67,6.17,Long,Riverside,
+2024-10-10,17.32,mi,134.22,120.0,114.13,7.75,Interval,Neighborhood,Tough run
+2024-10-21,10.72,mi,99.29,125.0,499.72,9.26,Race,Riverside,Weather was perfect
+2025-01-08,31.45,km,311.21,144.0,,9.9,Long,Trail,Weather was perfect
+2024-12-22,16.66,km,199.26,126.0,307.75,11.96,Tempo,Central Park,
+2024-09-30,14.93,mi,153.8,132.0,387.78,10.3,Interval,Neighborhood,
+2024-09-16,11.37,mi,100.45,143.0,298.3,8.83,Tempo,Stadium,Great scenery
+2024-10-19,10.37,mi,96.6,146.0,310.42,9.32,Easy,Trail,
+2024-12-18,7.14,km,49.73,161.0,144.64,6.96,Race,Central Park,Struggled with pace
+2025-01-08,28.93,km,266.78,176.0,,9.22,Interval,,
+2025-02-06,21.74,km,258.86,163.0,360.6,11.91,Long,Neighborhood,Weather was perfect
+2024-11-01,9.39,mi,86.1,169.0,,9.17,Race,Central Park,Great scenery
+2024-09-08,22.02,km,220.04,159.0,211.66,9.99,Easy,Downtown,
+2025-01-19,19.52,mi,210.58,120.0,,10.79,Recovery,Riverside,Tough run
+2024-10-06,5.63,km,39.66,178.0,361.67,7.04,Tempo,Neighborhood,Struggled with pace
+2025-02-20,18.23,mi,214.96,163.0,474.25,11.79,Tempo,Neighborhood,
+2024-10-01,14.2,km,143.39,173.0,,10.1,Race,Neighborhood,
+2024-09-27,18.38,km,124.12,171.0,,6.75,Tempo,Stadium,
+2024-11-27,25.58,km,234.89,158.0,237.37,9.18,Tempo,Riverside,Felt great!
+2024-12-29,9.46,km,107.41,126.0,,11.35,Easy,Central Park,Weather was perfect
+2024-11-08,4.52,mi,35.06,178.0,258.78,7.76,Long,Downtown,Weather was perfect
+2025-01-03,5.8,km,61.43,157.0,32.5,10.59,Tempo,Central Park,
+2025-02-07,26.81,km,214.01,126.0,158.66,7.98,Interval,Central Park,Struggled with pace
+2024-10-13,3.67,km,41.31,165.0,306.34,11.26,Long,Downtown,
+2024-11-30,13.71,mi,85.98,,,6.27,Interval,Trail,Felt great!
+2025-01-22,10.55,mi,83.17,176.0,302.69,7.88,Recovery,Central Park,
+2024-12-24,3.02,mi,27.3,179.0,,9.04,Interval,,Struggled with pace
+2025-02-18,11.97,mi,135.49,160.0,268.42,11.32,Interval,Central Park,Felt great!
+2024-11-18,15.13,mi,124.75,155.0,430.98,8.25,Long,,Weather was perfect
+2025-01-20,5.35,mi,47.8,132.0,228.41,8.93,Long,Neighborhood,
+2024-08-30,21.17,km,161.15,167.0,61.73,7.61,Race,Neighborhood,
+2025-01-26,16.7,mi,167.64,132.0,79.23,10.04,Race,Riverside,Felt great!
+2024-11-13,22.57,km,199.89,127.0,,8.86,Recovery,Central Park,Great scenery
+2024-09-17,20.18,km,148.43,122.0,297.44,7.36,Race,Neighborhood,
+2024-09-17,4.35,mi,31.65,164.0,183.05,7.28,Recovery,Central Park,Tough run
+2024-11-05,14.11,km,164.84,154.0,,11.68,Easy,Central Park,
+2025-02-11,12.73,mi,127.03,157.0,,9.98,Race,Riverside,Struggled with pace
+2024-12-14,17.05,km,187.85,166.0,65.01,11.02,Tempo,Stadium,
+2025-01-07,22.16,km,244.74,131.0,204.92,11.04,Easy,,
+2024-12-30,13.63,mi,98.98,137.0,29.88,7.26,Tempo,,Felt great!

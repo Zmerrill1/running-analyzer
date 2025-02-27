@@ -4,6 +4,7 @@ from alembic import context
 from decouple import config
 from running_analyzer.db import get_engine
 
+
 # Alembic Config
 config_obj = context.config
 

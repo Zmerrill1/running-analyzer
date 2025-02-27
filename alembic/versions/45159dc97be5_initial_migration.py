@@ -1,19 +1,18 @@
 """Initial migration
 
-Revision ID: b2fe954bd31d
+Revision ID: 45159dc97be5
 Revises:
-Create Date: 2025-02-19 18:58:01.797162
+Create Date: 2025-02-24 18:00:02.613701
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = "b2fe954bd31d"
+revision: str = "45159dc97be5"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,7 +29,7 @@ def upgrade() -> None:
             "unit", sa.Enum("MILES", "KILOMETERS", name="distanceunit"), nullable=False
         ),
         sa.Column("duration", sa.Float(), nullable=False),
-        sa.Column("heart_rate", sa.Integer(), nullable=True),
+        sa.Column("heart_rate", sa.Float(), nullable=True),
         sa.Column("elevation_gain", sa.Float(), nullable=True),
         sa.Column("pace", sa.Float(), nullable=True),
         sa.Column(
@@ -40,8 +39,8 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
-        sa.Column("location", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-        sa.Column("notes", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("location", sa.String(), nullable=True),
+        sa.Column("notes", sa.String(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###
