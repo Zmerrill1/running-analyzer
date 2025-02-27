@@ -1,3 +1,4 @@
+from __future__ import annotations
 from sqlmodel import SQLModel, Field
 from datetime import datetime
 from enum import Enum
@@ -35,13 +36,21 @@ class Run(SQLModel, table=True):
 
     @property
     def calculated_pace(self) -> float:
-        return self.duration / self.distance if self.distance else 0
+        try:
+            return self.duration / self.distance
+        except ZeroDivisionError:
+            return 0
 
     @classmethod
-    def summarize_runs(cls, runs: list["Run"]) -> dict:
+    def summarize_runs(cls, runs: list[Run]) -> dict:
         total_runs = len(runs)
-        total_distance = sum(run.distance for run in runs)
-        total_duration = sum(run.duration for run in runs)
+        total_distance = 0
+        total_duration = 0
+
+        for run in runs:
+            total_distance += run.distance
+            total_duration += run.duration
+
         avg_distance = total_distance / total_runs
         avg_duration = total_duration / total_runs
         avg_pace = total_duration / total_distance if total_distance > 0 else 0
@@ -56,14 +65,14 @@ class Run(SQLModel, table=True):
         }
 
     @classmethod
-    def best_run(cls, runs: list["Run"]) -> Optional["Run"]:
+    def best_run(cls, runs: list[Run]) -> Optional[Run]:
         valid_runs = [run for run in runs if run.distance > 0]
         if not valid_runs:
             return None
         return min(valid_runs, key=lambda run: run.calculated_pace)
 
     @classmethod
-    def average_pace(cls, runs: list["Run"]) -> float:
+    def average_pace(cls, runs: list[Run]) -> float:
         total_distance = sum(run.distance for run in runs)
         total_duration = sum(run.duration for run in runs)
         return total_duration / total_distance if total_distance else 0
@@ -74,8 +83,7 @@ class Run(SQLModel, table=True):
 
     @property
     def run_date(self) -> str:
-        return (
-            self.date.strftime("%Y-%m-%d")
-            if isinstance(self.date, datetime)
-            else self.date
-        )
+        try:
+            return self.date.strftime("%Y-%m-%d")
+        except AttributeError:
+            return str(self.date)
