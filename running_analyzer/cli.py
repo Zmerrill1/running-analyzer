@@ -1,10 +1,11 @@
 import typer
-from running_analyzer.db import get_engine, RunRepository, Database
+import plotext as plt
+from datetime import datetime
+from running_analyzer.db import RunRepository, Database
 from running_analyzer.models import Run
 from running_analyzer.utils import load_runs_from_csv, display_run_details
 
 app = typer.Typer()
-engine = get_engine()
 
 db = Database()
 repo = RunRepository(db)
@@ -152,6 +153,32 @@ def avg_pace():
 
     sample_run = runs[0]
     typer.echo(f"Average Pace: {pace:.2f} min per {sample_run.unit_display}")
+
+
+@app.command("plot-runs", help="Plot distance over time")
+def plot_runs():
+    runs = repo.list_runs()
+
+    if not runs:
+        typer.echo("No runs found in the database")
+        raise TypeError
+
+    dates = []
+    distances = []
+
+    for run in runs:
+        formatted_date = datetime.strptime(str(run.run_date), "%Y-%m-%d").strftime(
+            "%d/%m/%Y"
+        )
+        dates.append(formatted_date)
+        distances.append(run.distance)
+
+    plt.title("Running Distance Over Time")
+    plt.plot(dates, distances, marker="dot", color="blue")
+    plt.xticks(dates[:: max(1, len(dates) // 10)])
+    plt.xlabel("Date")
+    plt.ylabel("Distance")
+    plt.show()
 
 
 if __name__ == "__main__":

@@ -24,9 +24,9 @@ class Database:
 
 
 class RunRepository:
-    def __init__(self, Database):
-        self.db = Database()
-        self.session = self.db.get_session()
+    def __init__(self, db: Database):
+        self.db = db
+        self.session = self.db.get_session
 
     def get_run_by_id(self, run_id: int) -> Optional[Run]:
         with self.session() as session:
