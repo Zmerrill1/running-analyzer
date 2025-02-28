@@ -47,6 +47,6 @@ def display_run_details(run: Run):
     typer.echo(f"  Heart Rate: {run.heart_rate}")
     typer.echo(f"  Elevation Gain: {run.elevation_gain}")
     typer.echo(f"  Pace: {run.pace}")
-    typer.echo(f"  Run Type: {run.run_type}")
+    typer.echo(f"  Run Type: {run.run_type.value}")
     typer.echo(f"  Location: {run.location}")
     typer.echo(f"  Notes: {run.notes}")
