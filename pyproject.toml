@@ -33,3 +33,9 @@ dependencies = [
     "typing-extensions>=4.12.2",
     "virtualenv>=20.29.2",
 ]
+
+[dependency-groups]
+dev = [
+    "freezegun>=1.5.1",
+    "pytest>=8.3.4",
+]

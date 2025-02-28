@@ -12,15 +12,16 @@ class Database:
             debug if debug is not None else config("ECHO", default=False, cast=bool)
         )
         self.engine = create_engine(self.database_url, echo=self.debug)
+        self._init_db()
+
+    def _init_db(self):
+        SQLModel.metadata.create_all(self.engine)
 
     def get_engine(self):
         return self.engine
 
     def get_session(self):
         return Session(self.engine)
-
-    def init_db(self):
-        SQLModel.metadata.create_all(self.engine)
 
 
 class RunRepository:
@@ -39,7 +40,7 @@ class RunRepository:
 
     def add_run(self, run: Run) -> Run:
         with self.session() as session:
-            session.add(Run)
+            session.add(run)
             session.commit()
             session.refresh(run)
             return run
