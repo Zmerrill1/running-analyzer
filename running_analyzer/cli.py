@@ -265,7 +265,3 @@ def update_run_alias():
 @app.command("br", help="Alias for best-run")
 def best_run_alias():
     best_run()
-
-
-if __name__ == "__main__":
-    app()
