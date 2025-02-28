@@ -24,8 +24,8 @@ class Database:
 
 
 class RunRepository:
-    def __init__(self, db: Database):
-        self.db = db
+    def __init__(self, database_url: str | None = None, debug: bool | None = None):
+        self.db = Database(database_url, debug)
         self.session = self.db.get_session
 
     def get_run_by_id(self, run_id: int) -> Optional[Run]:
@@ -46,7 +46,7 @@ class RunRepository:
 
     def delete_run(self, run_id: int) -> bool:
         with self.session() as session:
-            run = session.get_run_by_id(run_id)
+            run = self.get_run_by_id(run_id)
             if run:
                 session.delete(run)
                 session.commit()
