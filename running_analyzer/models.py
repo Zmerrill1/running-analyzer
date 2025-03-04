@@ -3,6 +3,7 @@ from sqlmodel import SQLModel, Field
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+from collections import defaultdict, Counter
 
 
 class DistanceUnit(str, Enum):
@@ -87,3 +88,64 @@ class Run(SQLModel, table=True):
             return self.date.strftime("%Y-%m-%d")
         except AttributeError:
             return str(self.date)
+
+    @classmethod
+    def slowest_run(cls, runs: list["Run"]) -> Optional["Run"]:
+        valid_runs = [run for run in runs if run.distance > 0]
+        return (
+            max(valid_runs, key=lambda run: run.calculated_pace) if valid_runs else None
+        )
+
+    @classmethod
+    def longest_run(cls, runs: list["Run"]) -> Optional["Run"]:
+        return max(runs, key=lambda run: run.distance) if runs else None
+
+    @classmethod
+    def shortest_run(cls, runs: list["Run"]) -> Optional["Run"]:
+        return min(runs, key=lambda run: run.distance) if runs else None
+
+    @classmethod
+    def weekly_summary(cls, runs: list["Run"]) -> dict:
+        weeks = defaultdict(lambda: {"distance": 0, "duration": 0, "count": 0})
+
+        for run in runs:
+            week_num = run.date.strftime("%Y-%W")
+            weeks[week_num]["distance"] += run.distance
+            weeks[week_num]["duration"] += run.duration
+            weeks[week_num]["count"] += 1
+
+        return {
+            week: {
+                "total_distance": data["distance"],
+                "total_duration": data["duration"],
+                "avg_pace": (data["duration"] / data["distance"])
+                if data["distance"] > 0
+                else 0.0,
+            }
+            for week, data in weeks.items()
+        }
+
+    @classmethod
+    def monthly_summary(cls, runs: list["Run"]) -> dict:
+        months = defaultdict(lambda: {"distance": 0, "duration": 0, "count": 0})
+
+        for run in runs:
+            month_num = run.date.strftime("%Y-%m")
+            months[month_num]["distance"] += run.distance
+            months[month_num]["duration"] += run.duration
+            months[month_num]["count"] += 1
+
+        return {
+            month: {
+                "total_distance": data["distance"],
+                "total_duration": data["duration"],
+                "avg_pace": (data["duration"] / data["distance"])
+                if data["distance"] > 0
+                else 0.0,
+            }
+            for month, data in months.items()
+        }
+
+    @classmethod
+    def run_type_distribution(cls, runs: list["Run"]) -> dict:
+        return dict(Counter(run.run_type for run in runs))

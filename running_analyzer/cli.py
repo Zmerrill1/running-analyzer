@@ -8,6 +8,7 @@ from running_analyzer.utils import load_runs_from_csv, display_run_details
 from rich.console import Console
 from rich.table import Table
 
+
 app = typer.Typer()
 
 repo = RunRepository()
@@ -21,6 +22,26 @@ def command_loop():
         "Welcome to Running Data Analyzer! Type 'help' for commands or 'exit' to quit."
     )
 
+    alias_map = {
+        "list-runs": ["lr"],
+        "update-run": ["ur"],
+        "best-run": ["br"],
+        "run-stat best": ["rb"],
+        "run-stat longest": ["rl"],
+        "run-stat shortest": ["rs"],
+        "run-stat slowest": ["rt"],
+        "import-data": ["id"],
+        "summary": ["sum"],
+        "avg-pace": ["ap"],
+        "weekly-summary": ["ws"],
+        "monthly-summary": ["ms"],
+        "plot-runs": ["pr"],
+        "plot-pace": ["pp"],
+        "plot-weekly-summary": ["pws"],
+    }
+
+    all_aliases = {alias for aliases in alias_map.values() for alias in aliases}
+
     while True:
         command = typer.prompt(">>>")
 
@@ -30,7 +51,14 @@ def command_loop():
         elif command == "help":
             typer.echo("Available commands:")
             for cmd_name in app.registered_commands:
-                typer.echo(f" - {cmd_name.name} : {cmd_name.help or 'No Description'}")
+                if cmd_name.name in all_aliases:
+                    continue
+
+                aliases = alias_map.get(cmd_name.name, [])
+                alias_text = f" (Alias: {', '.join(aliases)})" if aliases else ""
+                typer.echo(
+                    f" - {cmd_name.name}{alias_text} : {cmd_name.help or 'No Description'}"
+                )
         else:
             try:
                 args = command.strip().split()
@@ -48,12 +76,6 @@ def run():
 @app.command("hello", help="Say hello!")
 def hello():
     typer.echo("👋 Hello from Running Data Analyzer!")
-
-
-@app.command("install-completion", help="Enable shell autocompletion")
-def install_completion():
-    typer.echo("Run the following command to enable autocompletion:")
-    typer.echo("source <(running-analyzer --install-completion)")
 
 
 @app.command("list-runs", help="List all runs")
@@ -78,10 +100,6 @@ def list_runs():
         )
 
     console.print(table)
-    # for run in runs:
-    #     typer.echo(
-    #         f"{run.id}. {run.run_date} - {run.distance} {run.unit_display} in {run.duration} mins"
-    #     )
 
 
 @app.command("update-run", help="Update a specific run's data. Add id # after command.")
@@ -134,7 +152,6 @@ def summary():
         raise typer.Exit()
 
     summary = Run.summarize_runs(runs)
-
     unit = runs[0].unit_display if runs else "unit"
 
     typer.echo("🏃‍♂️ Run Summary:")
@@ -145,21 +162,30 @@ def summary():
     typer.echo(f"  Average Duration: {summary['avg_duration']:.2f} mins")
     typer.echo(f"  Average Pace: {summary['avg_pace']:.2f} min per {unit}")
 
+    best = Run.best_run(runs)
+    longest = Run.longest_run(runs)
+    shortest = Run.shortest_run(runs)
+    slowest = Run.slowest_run(runs)
 
-@app.command("best-run", help="Best run details")
-def best_run():
-    best = repo.get_best_run()
-    if not best:
-        typer.echo("No valid runs found with distance greater than zero")
-        raise typer.Exit()
+    if best:
+        typer.echo("\n🏆 Best Run:")
+        typer.echo(
+            f"  {best.run_date}: {best.distance:.2f} {unit} in {best.duration:.2f} mins (Pace: {best.calculated_pace:.2f})"
+        )
 
-    unit_str = best.unit.value if best.unit and hasattr(best.unit, "value") else "unit"
+    if longest:
+        typer.echo("\n📏 Longest Run:")
+        typer.echo(f"  {longest.run_date}: {longest.distance:.2f} {unit}")
 
-    typer.echo("Best Run:")
-    typer.echo(f"Date: {best.run_date}, Distance: {best.distance} {unit_str}")
-    typer.echo(
-        f"Duration: {best.duration} mins, Pace: {best.calculated_pace:.2f} min per {unit_str}"
-    )
+    if shortest:
+        typer.echo("\n📉 Shortest Run:")
+        typer.echo(f"  {shortest.run_date}: {shortest.distance:.2f} {unit}")
+
+    if slowest:
+        typer.echo("\n🐢 Slowest Run:")
+        typer.echo(
+            f"  {slowest.run_date}: Pace of {slowest.calculated_pace:.2f} min/{unit}"
+        )
 
 
 @app.command("avg-pace", help="Average pace overall")
@@ -174,6 +200,103 @@ def avg_pace():
 
     sample_run = runs[0]
     typer.echo(f"Average Pace: {pace:.2f} min per {sample_run.unit_display}")
+
+
+@app.command("weekly-summary", help="Show weekly running summary")
+def weekly_summary():
+    runs = repo.list_runs()
+    if not runs:
+        typer.echo("No runs found in the database")
+        raise typer.Exit()
+
+    weekly_data = Run.weekly_summary(runs)
+    unit = runs[0].unit_display if runs else "unit"
+
+    sorted_weeks = sorted(
+        weekly_data.items(), key=lambda x: tuple(map(int, x[0].split("-")))
+    )
+
+    table = Table(title="📅 Weekly Running Summary")
+    table.add_column("Week", justify="center", style="cyan")
+    table.add_column("Total Distance", justify="right", style="green")
+    table.add_column("Total Duration", justify="right", style="yellow")
+    table.add_column("Average Pace", justify="right", style="magenta")
+
+    for week, data in sorted_weeks:
+        table.add_row(
+            week,
+            f"{data['total_distance']:.2f} {unit}",
+            f"{data['total_duration']:.2f} mins",
+            f"{data['avg_pace']:.2f} min/{unit}",
+        )
+
+    console.print(table)
+
+
+@app.command("monthly-summary", help="Show weekly running summary")
+def monthly_summary():
+    runs = repo.list_runs()
+    if not runs:
+        typer.echo("No runs found in the database")
+        raise typer.Exit()
+
+    monthly_data = Run.monthly_summary(runs)
+    unit = runs[0].unit_display if runs else "unit"
+
+    sorted_months = sorted(
+        monthly_data.items(), key=lambda x: tuple(map(int, x[0].split("-")))
+    )
+
+    table = Table(title="📅 Monthly Running Summary")
+    table.add_column("Month", justify="center", style="cyan")
+    table.add_column("Total Distance", justify="right", style="green")
+    table.add_column("Total Duration", justify="right", style="yellow")
+    table.add_column("Average Pace", justify="right", style="magenta")
+
+    for month, data in sorted_months:
+        table.add_row(
+            month,
+            f"{data['total_distance']:.2f} {unit}",
+            f"{data['total_duration']:.2f} mins",
+            f"{data['avg_pace']:.2f} min/{unit}",
+        )
+
+    console.print(table)
+
+
+@app.command(
+    "run-stat",
+    help="Show details of a specific run stat (longest, shortest, slowest, best)",
+)
+def run_stat(stat: str):
+    runs = repo.list_runs()
+    if not runs:
+        typer.echo("No runs found in database")
+        raise typer.Exit()
+
+    stat_map = {
+        "longest": (Run.longest_run, "📏 Longest Run"),
+        "shortest": (Run.shortest_run, "📉 Shortest Run"),
+        "slowest": (Run.slowest_run, "🐢 Slowest Run"),
+        "best": (Run.best_run, "🏆 Best Run"),
+    }
+
+    if stat not in stat_map:
+        typer.echo("Invalid stat type. Choose from: longest, shortest, slowest, best")
+        raise typer.Exit()
+
+    run_func, emoji_title = stat_map[stat]
+    selected_run = run_func(runs)
+    if not selected_run:
+        typer.echo(f"No valid {stat} run found.")
+        raise typer.Exit()
+
+    unit_str = selected_run.unit.value
+    typer.echo(f"{emoji_title}:")
+    typer.echo(f"Date: {selected_run.run_date}")
+    typer.echo(f"Distance: {selected_run.distance:.2f} {unit_str}")
+    typer.echo(f"Duration: {selected_run.duration:.2f} mins")
+    typer.echo(f"Pace: {selected_run.calculated_pace:.2f} min/{unit_str}")
 
 
 @app.command("plot-runs", help="Plot distance trend over time")
@@ -251,17 +374,46 @@ def plot_pace():
     plt.show()
 
 
-# Command Aliases for most common commands
-@app.command("lr", help="Alias for list-runs")
-def list_runs_alias():
-    list_runs()
+@app.command("plot-weekly-summary", help="Show weekly distance summary as a bar chart")
+def plot_weekly_summary():
+    runs = repo.list_runs()
+    if not runs:
+        typer.echo("No runs found in database")
+        raise typer.Exit()
+
+    weekly_data = Run.weekly_summary(runs)
+
+    sorted_weeks = sorted(
+        weekly_data.keys(), key=lambda r: datetime.strptime(r + "-1", "%Y-%W-%w")
+    )
+    distances = [weekly_data[week]["total_distance"] for week in sorted_weeks]
+
+    plt.clear_data()
+    plt.title("Weekly Running Summary")
+    plt.bar(sorted_weeks, distances, color="green")
+
+    tick_step = max(1, len(sorted_weeks) // 6)
+    selected_indices = range(0, len(sorted_weeks), tick_step)
+    selected_labels = [sorted_weeks[i] for i in selected_indices]
+
+    plt.xticks(selected_indices, selected_labels)
+    plt.xlabel("Week")
+    plt.ylabel("Total Distance")
+    plt.show()
 
 
-@app.command("ur", help="Alias for update-run")
-def update_run_alias():
-    update_run()
-
-
-@app.command("br", help="Alias for best-run")
-def best_run_alias():
-    best_run()
+# Register aliases
+app.command("lr")(list_runs)
+app.command("ur")(update_run)
+app.command("rb")(lambda: run_stat("best"))
+app.command("rl")(lambda: run_stat("longest"))
+app.command("rs")(lambda: run_stat("shortest"))
+app.command("rt")(lambda: run_stat("slowest"))
+app.command("id")(import_data)
+app.command("sum")(summary)
+app.command("ap")(avg_pace)
+app.command("ws")(weekly_summary)
+app.command("ms")(monthly_summary)
+app.command("pr")(plot_runs)
+app.command("pp")(plot_pace)
+app.command("pws")(plot_weekly_summary)
