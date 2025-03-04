@@ -56,46 +56,8 @@ def test_add_run(repo, add_run):
     }
 
 
-"""
-The issue with this test was that the session wasn't persisting when creating the second run.
-To fix I explicitly set the session and added the runs.
-Did a helper function to create the second run with new values, so there wouldn't be duplicates.
-The test_list_runs that isn't commented out is much cleaner and uses the helper function.
-Will delete this note and old test_list_runs later.
-"""
-# @freeze_time("2025-01-01")
-# def test_list_runs(repo, add_run):
-#     session = repo.session()
-
-#     second_run = Run(
-#         date=datetime(2025, 1, 2, 0, 1),
-#         unit=DistanceUnit.MILES,
-#         distance=5,
-#         duration=60,
-#         run_type=RunType.RECOVERY,
-#         notes="Second run"
-#     )
-
-#     print("Before adding any runs:", repo.list_runs())
-
-#     session.add(add_run)
-#     session.commit()
-#     session.refresh(add_run)
-#     print("First run added:", add_run.model_dump())
-
-#     session.add(second_run)
-#     session.commit()
-#     session.refresh(second_run)
-#     print("Second run added:", second_run.model_dump())
-
-#     runs = repo.list_runs()
-#     print("Runs in DB:", [run.model_dump() for run in runs])
-
-#     assert len(runs) == 2
-
-
 @freeze_time("2025-01-01")
-def test_list_runs2(repo, add_run):
+def test_list_runs(repo, add_run):
     """Test listing multiple runs after inserting them."""
     repo.add_run(add_run)
     second_run = create_run()  # Create a new, unique run
@@ -134,3 +96,61 @@ def test_list_runs2(repo, add_run):
     ]
 
     assert [run.model_dump() for run in runs] == expected_runs
+
+
+def test_get_run_by_id(repo, add_run):
+    run = repo.add_run(add_run)
+    retrieved_run = repo.get_run_by_id(run.id)
+
+    assert retrieved_run is not None
+    assert retrieved_run.id == run.id
+    assert retrieved_run.distance == run.distance
+
+
+def test_delete_run(repo, add_run):
+    run = repo.add_run(add_run)
+    assert repo.get_run_by_id(run.id) is not None
+
+    deleted = repo.delete_run(run.id)
+    assert deleted is True
+    assert repo.get_run_by_id(run.id) is None
+
+
+def test_update_run(repo, add_run):
+    run = repo.add_run(add_run)
+    repo.update_run(run.id, distance=20, location="home", run_type=RunType.RACE)
+    updated_run = repo.get_run_by_id(run.id)
+
+    assert updated_run.distance == 20
+    assert updated_run.location == "home"
+    assert updated_run.run_type == "Race"
+
+
+def test_list_runs_by_type(repo, add_run):
+    repo.add_run(add_run)
+    another_run = create_run(run_type=RunType.RECOVERY)
+    repo.add_run(another_run)
+
+    long_runs = repo.list_runs_by_type(RunType.LONG)
+    assert len(long_runs) == 1
+    assert long_runs[0].run_type == RunType.LONG
+
+
+def test_list_runs_by_date_range(repo, add_run):
+    repo.add_run(add_run)
+    another_run = create_run(date=datetime(2025, 1, 17))
+    repo.add_run(another_run)
+
+    runs = repo.list_runs_by_date_range(datetime(2025, 1, 10), datetime(2025, 1, 18))
+    assert len(runs) == 1
+    assert runs[0].date == datetime(2025, 1, 17)
+
+
+def test_get_best_run(repo, add_run):
+    repo.add_run(add_run)
+    slow_run = create_run(distance=10, duration=75)
+    repo.add_run(slow_run)
+
+    best_run = repo.get_best_run()
+    assert best_run is not None
+    assert best_run.duration == 60

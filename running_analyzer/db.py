@@ -54,8 +54,12 @@ class RunRepository:
                 return True
             return False
 
-    def update_run(self, run: Run, **kwargs) -> None:
+    def update_run(self, run_id: int, **kwargs) -> None:
         with self.session() as session:
+            run = session.get(Run, run_id)
+            if not run:
+                return None
+
             for key, value in kwargs.items():
                 setattr(run, key, value)
             session.add(run)
