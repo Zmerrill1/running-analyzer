@@ -8,7 +8,7 @@ from running_analyzer.models import Run, DistanceUnit, RunType
 
 @pytest.fixture(scope="function")
 def repo():
-    return RunRepository("sqlite:///:memory:", debug=True)
+    return RunRepository("sqlite:///:memory:", debug=True, create_db=True)
 
 
 @pytest.fixture(scope="function")

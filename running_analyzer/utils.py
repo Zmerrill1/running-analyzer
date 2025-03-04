@@ -15,18 +15,18 @@ def load_runs_from_csv(csv_file: str):
             try:
                 run = Run(
                     date=row["date"],
-                    distance=row["distance"],
+                    distance=float(row["distance"] or 0),
                     unit=row.get("unit", "km"),
-                    duration=row["duration"],
-                    heart_rate=row.get("heart_rate", 0),
-                    elevation_gain=row.get("elevation_gain", 0),
-                    pace=row.get("pace", 0),
-                    run_type=row.get("run_type", ""),
+                    duration=float(row["duration"] or 0),
+                    heart_rate=float(row["heart_rate"] or 0),
+                    elevation_gain=float(row["elevation_gain"] or 0),
+                    pace=float(row["pace"] or 0),
+                    run_type=row["run_type"],
                     location=row.get("location", ""),
                     notes=row.get("notes", ""),
                 )
                 runs_to_add.append(run)
-            except ValueError as e:
+            except (KeyError, ValueError) as e:
                 logging.warning(f"Skipping row {row} due to error: {e}")
                 invalid_rows.append(row)
     if invalid_rows:
