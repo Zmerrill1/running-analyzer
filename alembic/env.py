@@ -22,7 +22,7 @@ target_metadata = SQLModel.metadata
 
 def run_migrations_online():
     db = Database(DATABASE_URL)
-    connectable = db.get_engine()  # Use your db.py engine
+    connectable = db.get_engine()
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
