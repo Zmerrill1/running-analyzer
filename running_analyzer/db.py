@@ -6,13 +6,20 @@ from datetime import datetime
 
 
 class Database:
-    def __init__(self, database_url: str | None = None, debug: bool | None = None):
+    def __init__(
+        self,
+        database_url: str | None = None,
+        *,
+        debug: bool | None = None,
+        create_db: bool = False,
+    ):
         self.database_url = database_url or config("DATABASE_URL")
         self.debug = (
             debug if debug is not None else config("ECHO", default=False, cast=bool)
         )
         self.engine = create_engine(self.database_url, echo=self.debug)
-        self._init_db()
+        if create_db:
+            self._init_db()
 
     def _init_db(self):
         SQLModel.metadata.create_all(self.engine)
@@ -25,8 +32,14 @@ class Database:
 
 
 class RunRepository:
-    def __init__(self, database_url: str | None = None, debug: bool | None = None):
-        self.db = Database(database_url, debug)
+    def __init__(
+        self,
+        database_url: str | None = None,
+        *,
+        debug: bool | None = None,
+        create_db: bool = False,
+    ):
+        self.db = Database(database_url, debug=debug, create_db=create_db)
         self.session = self.db.get_session
 
     def get_run_by_id(self, run_id: int) -> Optional[Run]:

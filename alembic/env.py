@@ -2,7 +2,7 @@ from logging.config import fileConfig
 from sqlmodel import SQLModel
 from alembic import context
 from decouple import config
-from running_analyzer.db import get_engine
+from running_analyzer.db import Database
 
 
 # Alembic Config
@@ -21,7 +21,8 @@ target_metadata = SQLModel.metadata
 
 
 def run_migrations_online():
-    connectable = get_engine()  # Use your db.py engine
+    db = Database(DATABASE_URL)
+    connectable = db.get_engine()
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
