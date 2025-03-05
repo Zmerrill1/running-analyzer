@@ -70,8 +70,8 @@ class RunRepository:
     def update_run(self, run_id: int, **kwargs) -> None:
         with self.session() as session:
             run = session.get(Run, run_id)
-            if not run:
-                return None
+            if run is None:
+                raise ValueError(f"Run with ID {run_id} not found.")
 
             for key, value in kwargs.items():
                 setattr(run, key, value)

@@ -104,10 +104,11 @@ def list_runs():
 
 @app.command("update-run", help="Update a specific run's data. Add id # after command.")
 def update_run(run_id: int):
-    run = repo.get_run_by_id(run_id)
-    if not run:
-        typer.echo(f"Run with id {run_id} not found.")
-        raise typer.Exit()
+    try:
+        run = repo.get_run_by_id(run_id)
+    except ValueError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
 
     display_run_details(run)
 
