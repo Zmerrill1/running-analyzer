@@ -1,5 +1,7 @@
 import csv
 from running_analyzer.models import Run
+from datetime import datetime
+from fitparse import FitFile
 import logging
 import typer
 
@@ -50,3 +52,54 @@ def display_run_details(run: Run):
     typer.echo(f"  Run Type: {run.run_type.value}")
     typer.echo(f"  Location: {run.location}")
     typer.echo(f"  Notes: {run.notes}")
+
+
+def parse_fit_file(file_path):
+    """Parses a .fit file and extracts key running data."""
+    fitfile = FitFile(file_path)
+
+    records = []
+
+    for record in fitfile.get_messages("record"):
+        data = {}
+        for data_field in record:
+            value = data_field.value
+
+            # Convert datetime objects to strings
+            if isinstance(value, datetime):
+                value = value.isoformat()
+
+            data[data_field.name] = value
+
+        records.append(data)
+
+    return records
+
+
+def summarize_fit_data(file_path):
+    records = parse_fit_file(file_path)
+
+    if records is None:
+        raise ValueError("No data found in the .fit file")
+
+    summary = {
+        "total_records": len(records),
+        "first_timestamp": records[0].get("timestamp", "N/A"),
+        "last_timestamp": records[-1].get("timestamp", "N/A"),
+        "total_distance": sum(r.get("distance", 0) for r in records if "distance" in r),
+        "average_speed": sum(r.get("speed", 0) for r in records if "speed" in r)
+        / len(records)
+        if len(records)
+        else 0,
+    }
+
+    return summary
+
+
+def list_fit_data(file_path):
+    records = parse_fit_file(file_path)
+
+    if not records:
+        return "No data found in the .fit file"
+
+    return records

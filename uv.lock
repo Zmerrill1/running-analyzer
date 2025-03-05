@@ -73,6 +73,12 @@ wheels = [
 ]
 
 [[package]]
+name = "fitparse"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/61/ed/5637fe96c56d55dfa6317ab16745f9a83ef2690d093cee8f0b59f983675f/fitparse-1.2.0.tar.gz", hash = "sha256:2d691022452dea6dabad13cc6e017ca467fe8a3a895cd3ac67a50a7bb716b4a9", size = 65716 }
+
+[[package]]
 name = "freezegun"
 version = "1.5.1"
 source = { registry = "https://pypi.org/simple" }
@@ -435,6 +441,7 @@ dependencies = [
     { name = "click" },
     { name = "distlib" },
     { name = "filelock" },
+    { name = "fitparse" },
     { name = "identify" },
     { name = "markdown-it-py" },
     { name = "mdurl" },
@@ -473,6 +480,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.1.8" },
     { name = "distlib", specifier = ">=0.3.9" },
     { name = "filelock", specifier = ">=3.17.0" },
+    { name = "fitparse", specifier = ">=1.2.0" },
     { name = "identify", specifier = ">=2.6.7" },
     { name = "markdown-it-py", specifier = ">=3.0.0" },
     { name = "mdurl", specifier = ">=0.1.2" },

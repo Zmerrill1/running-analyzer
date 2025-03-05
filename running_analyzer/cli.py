@@ -1,12 +1,19 @@
 import typer
+import os
 import plotext as plt
 import numpy as np
 from datetime import datetime
 from running_analyzer.db import RunRepository
 from running_analyzer.models import Run
-from running_analyzer.utils import load_runs_from_csv, display_run_details
+from running_analyzer.utils import (
+    load_runs_from_csv,
+    display_run_details,
+    summarize_fit_data,
+    list_fit_data,
+)
 from rich.console import Console
 from rich.table import Table
+import json
 
 
 app = typer.Typer()
@@ -38,6 +45,7 @@ def command_loop():
         "plot-runs": ["pr"],
         "plot-pace": ["pp"],
         "plot-weekly-summary": ["pws"],
+        "import-fit": ["if"],
     }
 
     all_aliases = {alias for aliases in alias_map.values() for alias in aliases}
@@ -300,6 +308,45 @@ def run_stat(stat: str):
     typer.echo(f"Pace: {selected_run.calculated_pace:.2f} min/{unit_str}")
 
 
+# Working on seeing what data a .fit file gives. TODO: perform necessary calculations to get usable data, add to DB in correct model
+@app.command("import-fit", help="Import running data from a .fit file")
+def import_fit(fit_file: str):
+    if not os.path.exists(fit_file):
+        typer.echo("Error: File not found.")
+        raise typer.Exit()
+
+    if not fit_file.endswith(".fit"):
+        typer.echo("Error: Only .fit files are supported.")
+        raise typer.Exit()
+
+    summary = summarize_fit_data(fit_file)
+    typer.echo("\n📊 FIT File Summary:")
+    for key, value in summary.items():
+        typer.echo(f"  {key.replace('_', ' ').title()}: {value}")
+
+
+@app.command("list-fit", help="List all raw data from a .fit file")
+def list_fit(fit_file: str):
+    """Lists raw records from a .fit file."""
+    if not os.path.exists(fit_file):
+        typer.echo("Error: File not found.")
+        raise typer.Exit()
+
+    if not fit_file.endswith(".fit"):
+        typer.echo("Error: Only .fit files are supported.")
+        raise typer.Exit()
+
+    records = list_fit_data(fit_file)
+
+    if isinstance(records, str):
+        typer.echo(records)  # If there's an error message (e.g., no data)
+    else:
+        console.print_json(
+            json.dumps(records)
+        )  # Show first 10 records nicely formatted
+
+
+# Plot/Chart Commands
 @app.command("plot-runs", help="Plot distance trend over time")
 def plot_runs():
     runs = repo.list_runs()
@@ -418,3 +465,4 @@ app.command("ms")(monthly_summary)
 app.command("pr")(plot_runs)
 app.command("pp")(plot_pace)
 app.command("pws")(plot_weekly_summary)
+app.command("if")(import_fit)
