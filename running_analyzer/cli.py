@@ -1,15 +1,15 @@
 import typer
-import os
 import plotext as plt
 import numpy as np
 from datetime import datetime
+from pathlib import Path
 from running_analyzer.db import RunRepository
-from running_analyzer.models import Run
+from running_analyzer.models import Run, DistanceUnit, RunType
 from running_analyzer.utils import (
     load_runs_from_csv,
     display_run_details,
     summarize_fit_data,
-    list_fit_data,
+    parse_fit_file,
 )
 from rich.console import Console
 from rich.table import Table
@@ -22,14 +22,25 @@ repo = RunRepository()
 
 console = Console()
 
+is_running = False
+
 
 # persistant runninng of app. Need to work more, but doing it REPL style and prompts users for commands.
 def command_loop():
+    global is_running
+    if is_running:
+        typer.echo(
+            "⚠️  The Running Data Analyzer is already running. Exiting duplicate session."
+        )
+        return
+
+    is_running = True
     typer.echo(
         "Welcome to Running Data Analyzer! Type 'help' for commands or 'exit' to quit."
     )
 
     alias_map = {
+        "add-run": ["ar"],
         "list-runs": ["lr"],
         "update-run": ["ur"],
         "best-run": ["br"],
@@ -46,6 +57,7 @@ def command_loop():
         "plot-pace": ["pp"],
         "plot-weekly-summary": ["pws"],
         "import-fit": ["if"],
+        "list-fit": ["lf"],
     }
 
     all_aliases = {alias for aliases in alias_map.values() for alias in aliases}
@@ -84,6 +96,54 @@ def run():
 @app.command("hello", help="Say hello!")
 def hello():
     typer.echo("👋 Hello from Running Data Analyzer!")
+
+
+@app.command("add-run", help="Manually add a run to the database")
+def add_run():
+    date_str = typer.prompt(
+        "Enter run date (YYYY-MM-DD) or leave blank for today",
+        default=datetime.utcnow().strftime("%Y-%m-%d"),
+    )
+    date = datetime.strptime(date_str, "%Y-%m-%d")
+
+    distance = typer.prompt("Enter distance", type=float)
+    unit = typer.prompt(
+        f"Enter unit ({', '.join([e.value for e in DistanceUnit])})",
+        default=DistanceUnit.KILOMETERS.value,
+    )
+    duration = typer.prompt("Enter duration in minutes", type=float)
+
+    heart_rate = typer.prompt("Enter heart rate (or leave blank)", default="", type=str)
+    heart_rate = float(heart_rate) if heart_rate else None
+
+    elevation_gain = typer.prompt(
+        "Enter elevation gain (or leave blank)", default="", type=str
+    )
+    elevation_gain = float(elevation_gain) if elevation_gain else None
+
+    run_type = typer.prompt(
+        f"Enter run type ({', '.join([e.value for e in RunType])})",
+        default=RunType.EASY.value,
+    )
+    location = typer.prompt("Enter location (or leave blank)", default="")
+    notes = typer.prompt("Enter notes (or leave blank)", default="")
+
+    run = Run.create_run(
+        date=date,
+        distance=distance,
+        unit=DistanceUnit(unit),
+        duration=duration,
+        heart_rate=heart_rate,
+        elevation_gain=elevation_gain,
+        run_type=RunType(run_type),
+        location=location if location else None,
+        notes=notes if notes else None,
+    )
+
+    repo.add_run(run)
+    typer.echo(
+        f"✅ Successfully added run on {run.run_date} ({run.distance} {run.unit_display})"
+    )
 
 
 @app.command("list-runs", help="List all runs")
@@ -275,7 +335,7 @@ def monthly_summary():
 
 @app.command(
     "run-stat",
-    help="Show details of a specific run stat (longest, shortest, slowest, best)",
+    help="Show details of a specific run stat (longest (rl), shortest (rs), slowest (rt), best (rb))",
 )
 def run_stat(stat: str):
     runs = repo.list_runs()
@@ -308,42 +368,75 @@ def run_stat(stat: str):
     typer.echo(f"Pace: {selected_run.calculated_pace:.2f} min/{unit_str}")
 
 
-# Working on seeing what data a .fit file gives. TODO: perform necessary calculations to get usable data, add to DB in correct model
-@app.command("import-fit", help="Import running data from a .fit file")
-def import_fit(fit_file: str):
-    if not os.path.exists(fit_file):
+def validate_fit_file(fit_file: str) -> Path:
+    path = Path(fit_file)
+
+    if not path.exists():
         typer.echo("Error: File not found.")
         raise typer.Exit()
 
-    if not fit_file.endswith(".fit"):
+    if path.suffix.lower() != ".fit":
         typer.echo("Error: Only .fit files are supported.")
         raise typer.Exit()
 
-    summary = summarize_fit_data(fit_file)
-    typer.echo("\n📊 FIT File Summary:")
-    for key, value in summary.items():
-        typer.echo(f"  {key.replace('_', ' ').title()}: {value}")
+    return path
+
+
+@app.command(
+    "import-fit",
+    help="Import running data from a .fit file. Call function and use --help for list of unit/run_type",
+)
+def import_fit(
+    fit_file: str,
+    unit: DistanceUnit = typer.Option(
+        "km",
+        "--unit",
+        "-u",
+        help=f"Distance unit. Options: {', '.join([e.value for e in DistanceUnit])}",
+    ),
+    run_type: RunType = typer.Option(
+        "Easy",
+        "--run-type",
+        "-r",
+        help=f"Type of run. Options: {', '.join([e.value for e in RunType])}",
+    ),
+):
+    path = validate_fit_file(fit_file)
+    records = parse_fit_file(str(path))
+
+    if not records:
+        typer.echo("Error: No data found in the .fit file")
+        raise typer.Exit(1)
+
+    summary = summarize_fit_data(records)
+
+    distance_m = summary["total_distance"]
+    distance = distance_m / 1609.34 if unit == "mi" else distance_m / 1000
+
+    run = Run(
+        date=datetime.fromisoformat(summary["last_timestamp"]),
+        distance=round(distance, 2),
+        unit=DistanceUnit(unit),
+        duration=summary["total_duration"],
+        run_type=RunType(run_type),
+    )
+
+    with repo.session() as session:
+        session.add(run)
+        session.commit()
+
+    typer.echo("\n Run data successfully imported into the database!")
 
 
 @app.command("list-fit", help="List all raw data from a .fit file")
 def list_fit(fit_file: str):
-    """Lists raw records from a .fit file."""
-    if not os.path.exists(fit_file):
-        typer.echo("Error: File not found.")
-        raise typer.Exit()
+    path = validate_fit_file(fit_file)
+    records = parse_fit_file(str(path))
 
-    if not fit_file.endswith(".fit"):
-        typer.echo("Error: Only .fit files are supported.")
-        raise typer.Exit()
-
-    records = list_fit_data(fit_file)
-
-    if isinstance(records, str):
-        typer.echo(records)  # If there's an error message (e.g., no data)
+    if not records:
+        typer.echo("No data found in the FIT file")
     else:
-        console.print_json(
-            json.dumps(records)
-        )  # Show first 10 records nicely formatted
+        console.print_json(json.dumps(records[:10], indent=2))
 
 
 # Plot/Chart Commands
@@ -451,6 +544,7 @@ def plot_weekly_summary():
 
 
 # Register aliases
+app.command("ar")(add_run)
 app.command("lr")(list_runs)
 app.command("ur")(update_run)
 app.command("rb")(lambda: run_stat("best"))
@@ -466,3 +560,4 @@ app.command("pr")(plot_runs)
 app.command("pp")(plot_pace)
 app.command("pws")(plot_weekly_summary)
 app.command("if")(import_fit)
+app.command("lf")(list_fit)
