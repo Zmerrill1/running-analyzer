@@ -62,9 +62,9 @@ Strava Guide: [Exporting Strava Data](https://support.strava.com/hc/en-us/articl
 ---
 
 ## 🛠️ Tech Stack
-- Backend: [Typer](https://typer.tiangolo.com)(CLI framework), [SQLModel](https://sqlmodel.tiangolo.com), [PostgreSQL](https://www.postgresql.org)(database, [Alembic](https://pypi.org/project/alembic/)(migrations)
-- CLI & Utilities: [Rich](https://rich.readthedocs.io/en/stable/console.html)(console output), [Plotext](https://pypi.org/project/plotext/)(terminal plotting), [NumPy](https://www.google.com/search?client=safari&rls=en&q=numpy&ie=UTF-8&oe=UTF-8&safe=active)(data processing)
-- Deployment: [PyPI](https://pypi.org)(package distribution)
+- Backend: [Typer](https://typer.tiangolo.com) (CLI framework), [SQLModel](https://sqlmodel.tiangolo.com) (ORM & DB modeling), [PostgreSQL](https://www.postgresql.org) (database), [Alembic](https://pypi.org/project/alembic/) (migrations)
+- CLI & Utilities: [Rich](https://rich.readthedocs.io/en/stable/console.html) (console output), [Plotext](https://pypi.org/project/plotext/) (terminal plotting), [NumPy](https://www.google.com/search?client=safari&rls=en&q=numpy&ie=UTF-8&oe=UTF-8&safe=active) (data processing)
+- Deployment: [PyPI](https://pypi.org) (package distribution)
 
 ## 🔥 Future Features
 
