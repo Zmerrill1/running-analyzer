@@ -14,7 +14,7 @@ Command-line interface (CLI) for easy use.
 
 
 ## Installation
-You can install the Running Data Analyzer from PyPI using uv:
+You can install the Running Data Analyzer from PyPI using `uv`:
 ```
 uv pip install running-data-analyzer
 ```
