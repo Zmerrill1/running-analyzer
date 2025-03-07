@@ -28,7 +28,7 @@ uv pip install running-analyzer
 ---
 
 ## 🚀 Usage
-Once installed, you can use the CLI command `running-analyzer run` to start the program. Or use `running-analyzer -help` to list avaialable commands.
+Once installed, you can use the CLI command `running-analyzer run` to start the program. Or use `running-analyzer -help` to list available commands.
 
 Note: Running `running-analyzer run` will start the interactive CLI mode. Use `exit` or `quit` to stop it. 
 
