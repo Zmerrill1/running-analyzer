@@ -22,75 +22,83 @@ repo = RunRepository()
 
 console = Console()
 
-is_running = False
+FIT_FILE_EXTENSION = ".fit"
 
 
 # persistant runninng of app. Need to work more, but doing it REPL style and prompts users for commands.
 def command_loop():
-    global is_running
-    if is_running:
+    is_running = False
+
+    def start():
+        nonlocal is_running
+
+        if is_running:
+            typer.echo(
+                "⚠️  The Running Data Analyzer is already running. Exiting duplicate session."
+            )
+            return
+
+        is_running = True
         typer.echo(
-            "⚠️  The Running Data Analyzer is already running. Exiting duplicate session."
+            "Welcome to Running Data Analyzer! Type 'help' for commands or 'exit' to quit."
         )
-        return
 
-    is_running = True
-    typer.echo(
-        "Welcome to Running Data Analyzer! Type 'help' for commands or 'exit' to quit."
-    )
+        alias_map = {
+            "add-run": ["ar"],
+            "list-runs": ["lr"],
+            "update-run": ["ur"],
+            "best-run": ["br"],
+            "run-stat best": ["rb"],
+            "run-stat longest": ["rl"],
+            "run-stat shortest": ["rs"],
+            "run-stat slowest": ["rt"],
+            "import-data": ["id"],
+            "summary": ["sum"],
+            "avg-pace": ["ap"],
+            "weekly-summary": ["ws"],
+            "monthly-summary": ["ms"],
+            "plot-runs": ["pr"],
+            "plot-pace": ["pp"],
+            "plot-weekly-summary": ["pws"],
+            "import-fit": ["if"],
+            "list-fit": ["lf"],
+        }
 
-    alias_map = {
-        "add-run": ["ar"],
-        "list-runs": ["lr"],
-        "update-run": ["ur"],
-        "best-run": ["br"],
-        "run-stat best": ["rb"],
-        "run-stat longest": ["rl"],
-        "run-stat shortest": ["rs"],
-        "run-stat slowest": ["rt"],
-        "import-data": ["id"],
-        "summary": ["sum"],
-        "avg-pace": ["ap"],
-        "weekly-summary": ["ws"],
-        "monthly-summary": ["ms"],
-        "plot-runs": ["pr"],
-        "plot-pace": ["pp"],
-        "plot-weekly-summary": ["pws"],
-        "import-fit": ["if"],
-        "list-fit": ["lf"],
-    }
+        all_aliases = {alias for aliases in alias_map.values() for alias in aliases}
 
-    all_aliases = {alias for aliases in alias_map.values() for alias in aliases}
+        while True:
+            command = typer.prompt(">>>")
 
-    while True:
-        command = typer.prompt(">>>")
+            if command in ["exit", "quit"]:
+                typer.echo("Goodbye!")
+                is_running = False
+                break
+            elif command == "help":
+                typer.echo("Available commands:")
+                for cmd_name in app.registered_commands:
+                    if cmd_name.name in all_aliases:
+                        continue
 
-        if command in ["exit", "quit"]:
-            typer.echo("Goodbye!")
-            break
-        elif command == "help":
-            typer.echo("Available commands:")
-            for cmd_name in app.registered_commands:
-                if cmd_name.name in all_aliases:
-                    continue
+                    aliases = alias_map.get(cmd_name.name, [])
+                    alias_text = f" (Alias: {', '.join(aliases)})" if aliases else ""
+                    typer.echo(
+                        f" - {cmd_name.name}{alias_text} : {cmd_name.help or 'No Description'}"
+                    )
+            else:
+                try:
+                    args = command.strip().split()
+                    if args:
+                        app(args, standalone_mode=False)
+                except Exception as e:
+                    typer.echo(f"Error: {e}")
 
-                aliases = alias_map.get(cmd_name.name, [])
-                alias_text = f" (Alias: {', '.join(aliases)})" if aliases else ""
-                typer.echo(
-                    f" - {cmd_name.name}{alias_text} : {cmd_name.help or 'No Description'}"
-                )
-        else:
-            try:
-                args = command.strip().split()
-                if args:
-                    app(args, standalone_mode=False)
-            except Exception as e:
-                typer.echo(f"Error: {e}")
+    return start
 
 
 @app.command("run", help="Start the Running Data Analyzer")
 def run():
-    command_loop()
+    start_command = command_loop()
+    start_command()
 
 
 @app.command("hello", help="Say hello!")
@@ -375,7 +383,7 @@ def validate_fit_file(fit_file: str) -> Path:
         typer.echo("Error: File not found.")
         raise typer.Exit()
 
-    if path.suffix.lower() != ".fit":
+    if path.suffix.lower() != FIT_FILE_EXTENSION:
         typer.echo("Error: Only .fit files are supported.")
         raise typer.Exit()
 
@@ -421,9 +429,8 @@ def import_fit(
         run_type=RunType(run_type),
     )
 
-    with repo.session() as session:
-        session.add(run)
-        session.commit()
+    repo = RunRepository()
+    repo.add_run(run)
 
     typer.echo("\n Run data successfully imported into the database!")
 

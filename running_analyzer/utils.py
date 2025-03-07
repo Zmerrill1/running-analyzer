@@ -83,8 +83,8 @@ def get_last_distance(records):
     return 0
 
 
-def calculate_duration(start, end):
-    if start == "N/A" or end == "N/A":
+def calculate_duration(start: datetime | None = None, end: datetime | None = None):
+    if start is None or end is None:
         return 0
 
     fmt = "%Y-%m-%dT%H:%M:%S"
@@ -97,8 +97,8 @@ def calculate_duration(start, end):
 
 
 def summarize_fit_data(records):
-    first_timestamp = records[0].get("timestamp", "N/A")
-    last_timestamp = records[-1].get("timestamp", "N/A")
+    first_timestamp = records[0].get("timestamp")
+    last_timestamp = records[-1].get("timestamp")
 
     summary = {
         "total_records": len(records),
