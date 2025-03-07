@@ -4,6 +4,10 @@
 
 A command-line tool for analyzing running data. Manually add data or upload from a CSV or FIT file. Supports basic data insights like distance, pace, and trends over time.
 
+📦 **PyPI**: [running-analyzer on PyPI](https://pypi.org/project/running-analyzer/)  
+🛠 **Source Code**: [GitHub Repo](https://github.com/Zmerrill1/running-analyzer)  
+
+
 ## Features
 
 - 📊 Load and analyze running data from CSV or FIT files.
