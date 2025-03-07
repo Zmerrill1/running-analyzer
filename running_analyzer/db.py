@@ -1,3 +1,4 @@
+from pathlib import Path
 from decouple import config
 from sqlmodel import SQLModel, create_engine, Session, select
 from typing import Optional
@@ -13,13 +14,21 @@ class Database:
         debug: bool | None = None,
         create_db: bool = False,
     ):
-        self.database_url = database_url or config("DATABASE_URL")
+        self.database_url = database_url or self.get_default_database_url()
         self.debug = (
             debug if debug is not None else config("ECHO", default=False, cast=bool)
         )
         self.engine = create_engine(self.database_url, echo=self.debug)
         if create_db:
             self._init_db()
+
+    def get_default_database_url(self) -> str:
+        env_db_url = config("DATABASE_URL", default=None)
+        if env_db_url:
+            return env_db_url
+
+        db_path = Path.home() / ".running_analyzer.db"
+        return f"sqlite:///{db_path}"
 
     def _init_db(self):
         SQLModel.metadata.create_all(self.engine)
