@@ -1,5 +1,7 @@
 # 🏃 Running Data Analyzer
 
+![PyPI version](https://img.shields.io/pypi/v/running-analyzer?color=blue&label=PyPI)
+
 A command-line tool for analyzing running data. Manually add data or upload from a CSV or FIT file. Supports basic data insights like distance, pace, and trends over time.
 
 ## Features
@@ -16,15 +18,15 @@ A command-line tool for analyzing running data. Manually add data or upload from
 ## Installation
 You can install the Running Data Analyzer from PyPI using `uv`:
 ```
-uv pip install running-data-analyzer
+uv pip install running-analyzer
 ```
 
 ---
 
 ## 🚀 Usage
-Once installed, you can use the CLI command `python -m running_analyzer run` to start the program. Or use `python -m running_analyzer -help` to list avaialable commands.
+Once installed, you can use the CLI command `running-analyzer run` to start the program. Or use `running-analyzer -help` to list avaialable commands.
 
-Using `run` will have the app continually running in the terminal. Use `help` to list out all the commands. 
+Note: Running `running-analyzer run` will start the interactive CLI mode. Use `exit` or `quit` to stop it. 
 
 ### Example Output
 ```
