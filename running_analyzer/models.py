@@ -149,3 +149,28 @@ class Run(SQLModel, table=True):
     @classmethod
     def run_type_distribution(cls, runs: list["Run"]) -> dict:
         return dict(Counter(run.run_type for run in runs))
+
+    @classmethod
+    def create_run(
+        cls,
+        date: datetime,
+        distance: float,
+        unit: DistanceUnit,
+        duration: float,
+        heart_rate: Optional[float] = None,
+        elevation_gain: Optional[float] = None,
+        run_type: RunType = RunType.EASY,
+        location: Optional[str] = None,
+        notes: Optional[str] = None,
+    ) -> "Run":
+        return cls(
+            date=date,
+            distance=distance,
+            unit=unit,
+            duration=duration,
+            heart_rate=heart_rate,
+            elevation_gain=elevation_gain,
+            run_type=run_type,
+            location=location,
+            notes=notes,
+        )
